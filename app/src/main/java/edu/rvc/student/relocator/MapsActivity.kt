@@ -60,6 +60,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         var repLocation2 = LatLng(salesRepList2[0].latitude, salesRepList2[0].longitude)
         mMap.addMarker(MarkerOptions().position(repLocation2 ).title("Sales Representative: " + salesRepList2[0].postalCode))
 
+        var salesRepList3 = Geocoder(this).getFromLocationName("2045 N Lincoln Park, Chicago, IL 60614", 1)
+        var repLocation3 = LatLng(salesRepList3[0].latitude, salesRepList3[0].longitude)
+        mMap.addMarker(MarkerOptions().position(repLocation3 ).title("Sales Representative: " + salesRepList3[0].postalCode))
+
         val camPos = CameraPosition(repLocation2, ZOOM_LEVEL, TILT_LEVEL, BEARING_LEVEL)
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPos))
 
