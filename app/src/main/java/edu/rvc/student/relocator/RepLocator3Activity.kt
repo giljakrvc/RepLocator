@@ -1,6 +1,7 @@
 package edu.rvc.student.relocator
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -30,7 +31,8 @@ class RepLocator3Activity : AppCompatActivity() {
         txtShowAddress2.text = intent.getStringExtra("City") + ", " + intent.getStringExtra("State") + ", " + intent.getStringExtra("ZipCode")
 
         btnBack.setOnClickListener(View.OnClickListener {
-            this.finish()
+            val intent = Intent(this, MapsActivity::class.java)
+            startActivity(intent)
         })
 
         //Fire hidekeyboard when user taps outside any text object

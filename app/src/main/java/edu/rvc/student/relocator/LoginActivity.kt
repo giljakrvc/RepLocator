@@ -7,6 +7,7 @@ import android.annotation.TargetApi
 import android.app.LoaderManager.LoaderCallbacks
 import android.content.Context
 import android.content.CursorLoader
+import android.content.Intent
 import android.content.Loader
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -23,6 +24,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -34,21 +36,25 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private var mAuthTask: UserLoginTask? = null
+    //
+    private val context = this
 
-    private val preferences = getSharedPreferences ("data", Context.MODE_PRIVATE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
 
-        val et1 = findViewById<EditText>(R.id.email) as EditText
-        et1.setText (preferences.getString ("mail", ""))
+        val et1 = findViewById<EditText>(R.id.txtEmail) as EditText
+        val pwd = findViewById<EditText>(R.id.txtPassword) as EditText
+        //et1.setText (preferences.getString ("mail", ""))
+        val preferences = getSharedPreferences ("data", Context.MODE_PRIVATE)
 
+        et1.setText(preferences.getString("mail", ""))
 
         // Set up the login form.
         populateAutoComplete()
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+        txtPassword.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin()
                 return@OnEditorActionListener true
@@ -56,7 +62,20 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             false
         })
 
-        email_sign_in_button.setOnClickListener { attemptLogin() }
+        email_sign_in_button.setOnClickListener {
+
+            //attemptLogin()
+            val editor = preferences.edit ()
+            editor.putString ("mail", et1.text.toString ())
+            editor.putString ("password", pwd.text.toString ())
+            editor.commit ()
+            //
+            Toast.makeText(this, "Welcome on board $et1 " , Toast.LENGTH_SHORT).show()
+
+            val intent = Intent(context, MapsActivity::class.java)
+            startActivity(intent)
+
+        }
     }
 
     private fun populateAutoComplete() {
@@ -75,7 +94,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             return true
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(email, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(txtEmail, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                 .setAction(android.R.string.ok,
                     { requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS) })
         } else {
@@ -110,31 +129,31 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         }
 
         // Reset errors.
-        email.error = null
-        password.error = null
+        txtEmail.error = null
+        txtPassword.error = null
 
         // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
+        val emailStr = txtEmail.text.toString()
+        val passwordStr = txtPassword.text.toString()
 
         var cancel = false
         var focusView: View? = null
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
-            password.error = getString(R.string.error_invalid_password)
-            focusView = password
+            txtPassword.error = getString(R.string.error_invalid_password)
+            focusView = txtPassword
             cancel = true
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
-            focusView = email
+            txtEmail.error = getString(R.string.error_field_required)
+            focusView = txtEmail
             cancel = true
         } else if (!isEmailValid(emailStr)) {
-            email.error = getString(R.string.error_invalid_email)
-            focusView = email
+            txtEmail.error = getString(R.string.error_invalid_email)
+            focusView = txtEmail
             cancel = true
         }
 
@@ -242,7 +261,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             android.R.layout.simple_dropdown_item_1line, emailAddressCollection
         )
 
-        email.setAdapter(adapter)
+        txtEmail.setAdapter(adapter)
     }
 
     object ProfileQuery {
@@ -285,16 +304,12 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             mAuthTask = null
             showProgress(false)
 
-
             if (success!!) {
-                val editor = preferences.edit ()
-                editor.putString ("mail", email.text.toString ())
-                editor.commit ()
-
                 finish()
+
             } else {
-                password.error = getString(R.string.error_incorrect_password)
-                password.requestFocus()
+                txtPassword.error = getString(R.string.error_incorrect_password)
+                txtPassword.requestFocus()
             }
         }
 

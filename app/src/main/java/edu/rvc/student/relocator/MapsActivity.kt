@@ -1,9 +1,12 @@
 package edu.rvc.student.relocator
 
+import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -11,15 +14,19 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
-    private val ZOOM_LEVEL = 15f
+    private val ZOOM_LEVEL = 9f
     private val TILT_LEVEL = 0f
     private val BEARING_LEVEL = 0f
+    private lateinit var repLocation : LatLng
 
     var salesRepList: List<Address> =  emptyList()
 
@@ -27,12 +34,45 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+        // Get the support action bar
+        val actionBar = supportActionBar
+
+        // Set the action bar title, subtitle and elevation
+        actionBar!!.title = "RepLocator"
+        actionBar.subtitle = "RepLocator Main Menu"
+        actionBar.elevation = 4.0F
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu to use in the action bar
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        when (item.getItemId()) {
+            R.id.add_rep -> {
+                val intent = Intent(this, repLocatorActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.sign_off -> {
+                finish()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
 
     /**
      * Manipulates the map once available.
@@ -45,29 +85,52 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        var ref = FirebaseDatabase.getInstance().getReference("RepLocator")
+        val context = this
 
-        // Add a marker in Sydney and move the camera
-        //val sydney = LatLng(-34.0, 151.0)
-        //mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        val eventListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
 
-        salesRepList =  Geocoder(this).getFromLocationName(
-            "207 N Academy, Janesville, WI 53548", 1)
-        val repLocation = LatLng(salesRepList[0].latitude, salesRepList[0].longitude)
-        mMap.addMarker(MarkerOptions().position(repLocation ).title("Sales Representative: " + salesRepList[0].postalCode))
+                val children = dataSnapshot.children
+                children.forEach {
+                    var representative: Any? = it.value
 
-        var salesRepList2 = Geocoder(this).getFromLocationName("3301 N Mulford Rd, Rockford, IL 61114", 1)
-        var repLocation2 = LatLng(salesRepList2[0].latitude, salesRepList2[0].longitude)
-        mMap.addMarker(MarkerOptions().position(repLocation2 ).title("Sales Representative: " + salesRepList2[0].postalCode))
+                    var fullName : Any? = it.child("fullName").value
+                    var email = it.child("email").value
+                    var mobile = it.child("mobile").value
+                    var address = it.child("address").value
+                    var city = it.child("city").value
+                    var state = it.child("state").value
+                    var zipCode = it.child("zipCode").value
 
-        var salesRepList3 = Geocoder(this).getFromLocationName("2045 N Lincoln Park, Chicago, IL 60614", 1)
-        var repLocation3 = LatLng(salesRepList3[0].latitude, salesRepList3[0].longitude)
-        mMap.addMarker(MarkerOptions().position(repLocation3 ).title("Sales Representative: " + salesRepList3[0].postalCode))
+                    print(" record: $fullName / $email / $address / $city / $state / $zipCode")
 
-        val camPos = CameraPosition(repLocation2, ZOOM_LEVEL, TILT_LEVEL, BEARING_LEVEL)
-        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPos))
+                    val coder = Geocoder(context)
+                    try {
+                        var salesRep =  coder.getFromLocationName("$address, $city, $state $zipCode", 1)
+                        if(salesRep != null){
+                            repLocation = LatLng(salesRep[0].latitude, salesRep[0].longitude)
+                            mMap.addMarker(MarkerOptions().position(repLocation ).title("$fullName / $mobile  " ).snippet("$address, $city, $state $zipCode"))
 
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(repLocation))
+                            val camPos = CameraPosition(repLocation, ZOOM_LEVEL, TILT_LEVEL, BEARING_LEVEL)
+                            mMap.moveCamera(CameraUpdateFactory.newCameraPosition(camPos))
+                        }
+
+                    } catch (ex: Exception ) {
+
+                        ex.printStackTrace();
+                    }
+
+
+                    //Log.d("TAG", "$representative / $representative.address ")
+                }
+
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {}
+        }
+
+        ref.addListenerForSingleValueEvent(eventListener)
 
     }
 }

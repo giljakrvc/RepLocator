@@ -37,10 +37,11 @@
             android:layout_width="395dp"
             android:id="@+id/txtWelcome"
             android:textAppearance="@style/TextAppearance.AppCompat"
-            android:layout_height="0dp"
-            app:layout_constraintStart_toStartOf="parent" app:layout_constraintHorizontal_bias="0.5"
+            android:layout_height="39dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toBottomOf="@+id/txtViewTitle3"
-            android:layout_marginBottom="35dp" app:layout_constraintBottom_toTopOf="@+id/txtShowName"/>
+            android:layout_marginBottom="35dp" app:layout_constraintBottom_toTopOf="@+id/txtShowName"
+    />
     <TextView
             android:layout_width="0dp"
             android:layout_height="0dp"
