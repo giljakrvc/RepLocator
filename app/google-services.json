@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "80945860903",
+    "firebase_url": "https://replocator-6c5e0.firebaseio.com",
+    "project_id": "replocator-6c5e0",
+    "storage_bucket": "replocator-6c5e0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80945860903:android:043a67a7b8597d8a",
+        "android_client_info": {
+          "package_name": "edu.rvc.student.relocator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "80945860903-e4khds03qf4onio65fg58ebi4buj8qlj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.rvc.student.relocator",
+            "certificate_hash": "c5601855f3c8fb34cd45b0ac50ae5cfa9ca126af"
+          }
+        },
+        {
+          "client_id": "80945860903-2j6vtf7m08khm03qkoju08vlk7d4o7nc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWaO43-ayyntXm_H_aUmjwWHAiEYRpDTk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "80945860903-2j6vtf7m08khm03qkoju08vlk7d4o7nc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

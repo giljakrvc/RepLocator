@@ -70,7 +70,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             editor.putString ("password", pwd.text.toString ())
             editor.commit ()
             //
-            Toast.makeText(this, "Welcome on board $et1 " , Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Welcome on board " + et1.text.toString() , Toast.LENGTH_SHORT).show()
 
             val intent = Intent(context, MapsActivity::class.java)
             startActivity(intent)

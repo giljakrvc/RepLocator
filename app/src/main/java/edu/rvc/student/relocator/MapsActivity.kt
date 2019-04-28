@@ -65,6 +65,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 startActivity(intent)
                 return true
             }
+            R.id.list_rep -> {
+                val intent = Intent(this, RepListActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.about-> {
+                val intent = Intent(this, AboutActivity::class.java)
+                startActivity(intent)
+                return true
+            }
             R.id.sign_off -> {
                 finish()
                 return true
@@ -103,7 +113,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     var state = it.child("state").value
                     var zipCode = it.child("zipCode").value
 
-                    print(" record: $fullName / $email / $address / $city / $state / $zipCode")
+                    //print(" record: $fullName / $email / $address / $city / $state / $zipCode")
 
                     val coder = Geocoder(context)
                     try {
