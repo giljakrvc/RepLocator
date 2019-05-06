@@ -27,6 +27,9 @@ class RepListActivity : AppCompatActivity() {
         var ref = FirebaseDatabase.getInstance().getReference("RepLocator")
         val lv = findViewById<ListView>(R.id.lstRepresentatives)
 
+        val intent = Intent(this, EditRepLocatorActivity::class.java)
+
+
         val eventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
 
@@ -40,23 +43,32 @@ class RepListActivity : AppCompatActivity() {
                     var city = it.child("city").value.toString()
                     var state = it.child("state").value.toString()
                     var zipCode = it.child("zipCode").value.toString()
-                    var id = "" //it.child("id").value.toString()
+                    var id = it.key
 
-                    print(" Listing records: $fullName / $email / $address / $city / $state / $zipCode")
-                    var rep = Representative( id, fullName, mobile, email, address, city, state, zipCode)
+                    //print(" Listing records: $id $fullName / $email / $address / $city / $state / $zipCode")
+                    var rep = Representative ( id, fullName, mobile, email, address, city, state, zipCode)
                     repList.add(rep)
                     repNameList.add(fullName)
 
-                    Log.d("TAG", " Listing records: $fullName / $email / $address / $city / $state / $zipCode")
+                    Log.e("TAG", " Listing records: $id $fullName / $email / $address / $city / $state / $zipCode")
                 }
 
                 val myListAdapter = RepListAdapter(context,repList)
                 lv.adapter = myListAdapter
 
                 lv.setOnItemClickListener(){adapterView, view, position, id ->
-                    val itemAtPos = adapterView.getItemAtPosition(position)
+                    val itemAtPos  = adapterView.getItemAtPosition(position) as Representative
                     val itemIdAtPos = adapterView.getItemIdAtPosition(position)
-                    Toast.makeText(context, "Click on item at $itemAtPos its item id $itemIdAtPos", Toast.LENGTH_LONG).show()
+
+                    Log.e("TAG", " Listing records: $id ${itemAtPos.FullName} $itemIdAtPos")
+
+                    Toast.makeText(context, "Click on item at ${itemAtPos.FullName} / ${itemAtPos.Email} - Position $itemIdAtPos ", Toast.LENGTH_LONG).show()
+
+
+                    //putExtra sets value to name SendStuff (Could be called whatever you want
+                    intent.putExtra("id",  itemAtPos.id)
+                    //Go to second activity
+                    startActivity(intent)
                 }
 
 
