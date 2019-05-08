@@ -8,7 +8,8 @@ Rock Valley College
 May 2019
 ```
 
-#App Name: #
+# App Name: #
+
 Sales Representative Locator
 
 ### Description: ###
@@ -86,4 +87,42 @@ Purchasing representatives of wholesale and retail companies interested in acqui
             startActivity(intent)
 
         })
+```
+
+## How to include Menu options on an Activity ##
+
+```
+ override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu to use in the action bar
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        when (item.getItemId()) {
+            R.id.add_rep -> {
+                val intent = Intent(this, repLocatorActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.list_rep -> {
+                val intent = Intent(this, RepListActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.about-> {
+                val intent = Intent(this, AboutActivity::class.java)
+                startActivity(intent)
+                return true
+            }
+            R.id.sign_off -> {
+                finish()
+                return true
+            }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
 ```
